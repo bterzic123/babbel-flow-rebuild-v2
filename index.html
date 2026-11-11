@@ -111,7 +111,7 @@ em.g{font-style:normal;background:var(--mark);padding:0 2px}
 /* your ads */
 .lib{background:var(--cream);border-radius:20px;padding:32px;margin-top:44px;display:grid;grid-template-columns:1.1fr 1fr;gap:32px;align-items:start}
 @media(max-width:900px){.lib{grid-template-columns:1fr;padding:16px}}
-.vid{position:relative;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:16/9}
+.vid{position:relative;border-radius:14px;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black);background:#000;aspect-ratio:16/9}
 .vid video{width:100%;height:100%;object-fit:cover}
 .vid .tag{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.94);color:var(--ink);font-size:11px;font-weight:600;letter-spacing:.06em;padding:5px 10px;border-radius:999px;display:flex;gap:6px;align-items:center}
 .vid .tag::before{content:"";width:8px;height:8px;border-radius:50%;background:#0866FF}
@@ -214,7 +214,7 @@ em.g{font-style:normal;background:var(--mark);padding:0 2px}
 .finger.on{opacity:1}.finger.press{transform:scale(.72)}
 
 /* ---- inside the phone: Babbel, as the app ships ---- */
-.scr{position:absolute;inset:12px;border-radius:46px;overflow:hidden;color-scheme:only light;
+.scr{position:absolute;inset:12px;border-radius:46px;overflow:hidden;isolation:isolate;clip-path:inset(0 round 46px);-webkit-mask-image:-webkit-radial-gradient(white,black);color-scheme:only light;
   --b-bg:#000000; --b-surf:#201F1D; --b-surf2:#2C2B29; --b-ink:#FFFFFF; --b-ink2:rgba(255,255,255,.82); --b-mute:rgba(255,255,255,.55); --b-line:rgba(255,255,255,.5); --b-hair:rgba(255,255,255,.14);
   --b-or:#FC4302; --b-sel:#441700; --b-pill:#161616; --b-cta:#FFFFFF; --b-ctat:#000000; --b-splash:#4A1500;
   background:var(--b-bg);color:var(--b-ink);font-family:var(--fp);display:flex;flex-direction:column}
@@ -262,11 +262,15 @@ em.g{font-style:normal;background:var(--mark);padding:0 2px}
 
 /* Meta, where the ad runs */
 .rls{position:absolute;inset:0;background:#000;color:#fff;font-family:-apple-system,Roboto,sans-serif}
-.rls video,.rls .rimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.rls .rimg.ct{object-fit:contain;background:#000}
+.rls{overflow:hidden;border-radius:inherit}
+.rls .rbg{position:absolute;inset:-40px;background:center/cover no-repeat;filter:blur(28px) brightness(.55);transform:scale(1.1)}
+.rls .rfg{position:absolute;left:0;right:0;top:92px;bottom:206px;display:flex;align-items:center;justify-content:center}
+.rls .rfg img{max-width:100%;max-height:100%;width:auto;height:auto;display:block;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.rls .rsq{position:relative;width:100%;aspect-ratio:1/1;max-height:100%;overflow:hidden;background:#000}
+.rls .rsq video{position:absolute;top:0;left:50%;height:100%;width:auto;max-width:none;transform:translateX(-50%)}
 .rls .rtop{position:absolute;top:56px;left:18px;right:18px;display:flex;justify-content:space-between;font-weight:700;font-size:20px;z-index:2;text-shadow:0 1px 6px rgba(0,0,0,.5)}
 .rls .rtop svg{width:26px;height:26px}
-.rls .rshade{position:absolute;left:0;right:0;bottom:0;height:52%;background:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,0))}
+.rls .rshade{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,0))}
 .rls .rbot{position:absolute;left:16px;right:16px;bottom:34px;z-index:2}
 .rls .rwho{display:flex;gap:10px;align-items:center}
 .rls .rwho img{width:34px;height:34px;border-radius:9px}
@@ -274,7 +278,7 @@ em.g{font-style:normal;background:var(--mark);padding:0 2px}
 .rls .rwho small{font-size:12px;opacity:.75}
 .rls p{font-size:14px;line-height:1.4;margin-top:10px}
 .rls .rcta{margin-top:12px;height:42px;border-radius:8px;background:rgba(255,255,255,.92);color:#111;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-weight:600;font-size:14.5px;width:100%}
-.rls .rside{position:absolute;right:12px;bottom:220px;display:flex;flex-direction:column;gap:22px;z-index:2;align-items:center;font-size:11px}
+.rls .rside{position:absolute;right:12px;bottom:232px;display:flex;flex-direction:column;gap:22px;z-index:2;align-items:center;font-size:11px}
 .rls .rside svg{width:26px;height:26px}
 
 /* splash + tracking */
@@ -678,8 +682,9 @@ function goalPhrase(i){ var g=nm(GOALS,COL[i].goals[0]||'conv'); return g[3]; }
 function whyName(i){ var w=nm(WHY,COL[i].why[0]||'other'); return w[1]; }
 
 function scrAd(i){
-  var p=PH[i], m=p.media==='video'?'<video src="img/ad-3wk.mp4" autoplay muted loop playsinline poster="img/ad-3wk-1.jpg"></video>':'<img class="rimg'+(i===1?' ct':'')+'" src="'+p.media+'" alt="">';
-  return '<div class="rls">'+m+'<div class="rshade"></div><div class="rtop"><span>Reels</span>'+SV('<circle cx="12" cy="12" r="3"/><path d="M4 8h3l2-3h6l2 3h3v11H4z"/>',2)+'</div>'+
+  var p=PH[i], bg=p.media==='video'?'img/ad-3wk-1.jpg':p.media,
+   m=p.media==='video'?'<div class="rsq"><video src="img/ad-3wk.mp4" autoplay muted loop playsinline poster="img/ad-3wk-1.jpg"></video></div>':'<img src="'+p.media+'" alt="">';
+  return '<div class="rls"><div class="rbg" style="background-image:url('+bg+')"></div><div class="rfg">'+m+'</div>'+'<div class="rshade"></div><div class="rtop"><span>Reels</span>'+SV('<circle cx="12" cy="12" r="3"/><path d="M4 8h3l2-3h6l2 3h3v11H4z"/>',2)+'</div>'+
    '<div class="rside">'+SV('<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',2)+SV('<path d="M4 5h16v11H9l-5 4z"/>',2)+SV('<path d="M22 3L11 13M22 3l-7 19-4-9-9-4z"/>',2)+'</div>'+
    '<div class="rbot"><div class="rwho"><img src="img/icon.png" alt=""><div><b>Babbel</b><small>Sponsored</small></div></div><p>'+p.cap+'</p>'+
    '<button class="rcta" data-act="install">Install now <span>›</span></button></div></div>'+sb(1);
@@ -948,7 +953,7 @@ renderTrio(); fit(); paintSteps(); addEventListener('resize',fit); addEventListe
 </script>
 <script>
 /* GitHub Pages lets browsers keep this page for 10 minutes; if a newer build is live, reload onto it */
-var BUILD='b1';
+var BUILD='b2';
 fetch(location.pathname+'?cb='+Date.now(),{cache:'no-store'}).then(function(r){ return r.text(); }).then(function(h){
   var m=h.match(/var BUILD='([^']+)'/); if(m && m[1]!==BUILD){ var q=new URLSearchParams(location.search); q.set('v',m[1]); location.replace(location.pathname+'?'+q.toString()); }
 }).catch(function(){});
